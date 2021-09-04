@@ -24,9 +24,10 @@ import os
 from zipfile import ZipFile
 from os.path import basename
 from PyQt5 import QtCore, QtGui, QtWidgets
-import datetime
+import jdatetime
 import json
 import sys
+
 data = {}
 data = []
 
@@ -202,128 +203,145 @@ class Ui_MainWindow(QtWidgets.QWidget):
 
 # function to take inputs
     def takeinputs(self):
-        name, done1 = QtWidgets.QInputDialog.getText(
-            self, 'Input Dialog', 'نام خود را وارد کنید:')
+        try:
+            name, done1 = QtWidgets.QInputDialog.getText(
+                self, 'Input Dialog', 'نام خود را وارد کنید:')
+            if done1:
+                pass
+            else:self.quit()
+            family, done2 = QtWidgets.QInputDialog.getText(
+            self, 'Input Dialog', 'نام خانوادگی خود را وارد کنید:')
+            if done2:
+                pass
+            else:self.quit()
+            tell, done3 = QtWidgets.QInputDialog.getText(
+                self, 'Input telephone', 'شماره تلفن خود را وارد کنید:')
+            if done3:
+                pass
+            else:self.quit()
+            code, done7 = QtWidgets.QInputDialog.getText(
+                self, 'Input telephone', 'کد ملی خود را وارد کنید :')
+            if done7:
+                pass
+            else:self.quit()
+            # langs =['C', 'c++', 'Java', 'Python', 'Javascript']
+            password , done4 = QtWidgets.QInputDialog.getText(
+                self, 'put youre card', 'کارت را در معرض دستگاه قرار دهید:')
+            if done4:
+                pass
+            else:self.quit()
+            # classs , done5 = QtWidgets.QInputDialog.getText(
+                # self, 'put youre card', 'نام آموزگار را وارد کنید')
+            classs , done6 = QtWidgets.QInputDialog.getText(
+                self, 'put youre card','پایه‌ی دانش آموز را وارد کنید'+'\n'+ 'یا کد معلم را وارد کنید')
+            if done6:
+                pass
+            else:self.quit()
+            gui = Template()
+            p = gui.open_image()
+    # up is to take image
 
-        family, done2 = QtWidgets.QInputDialog.getText(
-        self, 'Input Dialog', 'نام خانوادگی خود را وارد کنید:')
+            if done1 and done2 and done4 :
+                try:
+                    with open('data.json') as json_file:
+                        data = json.load(json_file)
+                except:
+                    data=[]
+                    with open('data.json', 'w+') as outfile:
+                        json.dump(data, outfile)
+                true = 0
+                true2 = 0
+                for tRue in data:
+                    if tRue['ID']==password:
+                        true = 1
+                        error = "کارت تکراری است."
+                    else:
+                        pass
+                    if tRue['name']==name and tRue['family']==family and tRue['code']==code:
+                        true2 = 1
+                        error = "شخص تکراری است."
+                    else:
+                        pass
+                if true==0 and true2==0:
+                    time = jdatetime.datetime.now()
+                    data.append({
+                                'name':name,
+                                'family':family,
+                                'tell':tell,
+                                'ID':password,
+                                'code':code,
+                                'day':time.day,
+                                'month': time.month,
+                                'year': time.year,
+                                'hour':time.hour,
+                                'filename':p,
+                                'class':classs
+                                        })
+                    if name != "" and family != "":
+                        self.label_5.setPixmap(QPixmap(p))
+                        self.label_5.setStyleSheet(
+                                                '''*{
+                                                    color: 'black';
+                                                    font-family: 'Arial';
+                                                    font-size: 22px;
+                                                    border-radius: 12px;
+                                                    font-weight: 200;
+                                                    background: transparent;
+                                                    background-color: rgba(100, 100, 100, 0.4);
 
-        tell, done3 = QtWidgets.QInputDialog.getText(
-            self, 'Input telephone', 'شماره تلفن خود را وارد کنید:')
-        code, done3 = QtWidgets.QInputDialog.getText(
-            self, 'Input telephone', 'کد ملی خود را وارد کنید :')
+                                                }''')
+                        self.label_4.setText('نام و نام خانوادگی :'
+                                        +str(name)+' '+str(family)+'\n'+'تلفن: '
+                                        +str(tell)+'\n کد ملی: '+str(code)+'\n کد عبور: '+str(password)+'\n'+'کلاس: '+str(classs))
+                        self.label_4.setStyleSheet(
+                                                '''*{
+                                                    color: 'black';
+                                                    font-family: 'Arial';
+                                                    font-size: 22px;
+                                                    border-radius: 12px;
+                                                    font-weight: 200;
+                                                    padding-right:8px;
+                                                    background: transparent;
+                                                    background-color: rgba(0, 250, 0, 0.5);
 
-        # langs =['C', 'c++', 'Java', 'Python', 'Javascript']
-        password , done4 = QtWidgets.QInputDialog.getText(
-            self, 'put youre card', 'کارت را در معرض دستگاه قرار دهید:')
-        # classs , done5 = QtWidgets.QInputDialog.getText(
-            # self, 'put youre card', 'نام آموزگار را وارد کنید')
-        classs , done6 = QtWidgets.QInputDialog.getText(
-            self, 'put youre card', 'پایه را وارد کنید')
-        gui = Template()
-        p = gui.open_image()
-# up is to take image
-
-        if done1 and done2 and done4 :
-            try:
-                with open('data.json') as json_file:
-                    data = json.load(json_file)
-            except:
-                data=[]
-                with open('data.json', 'w+') as outfile:
-                    json.dump(data, outfile)
-            true = 0
-            true2 = 0
-            for tRue in data:
-                if tRue['ID']==password:
-                    true = 1
-                    error = "کارت تکراری است."
-                else:
-                    pass
-                if tRue['name']==name and tRue['family']==family and tRue['code']==code:
-                    true2 = 1
-                    error = "شخص تکراری است."
-                else:
-                    pass
-            if true==0 and true2==0:
-                time = datetime.datetime.now()
-                data.append({
-                            'name':name,
-                            'family':family,
-                            'tell':tell,
-                            'ID':password,
-                            'code':code,
-                            'day':time.day,
-                            'month': time.month,
-                            'year': time.year,
-                            'hour':time.hour,
-                            'filename':p,
-                            'class':classs
-                                    })
-                if name != "" and family != "":
-                    self.label_5.setPixmap(QPixmap(p))
-                    self.label_5.setStyleSheet(
-                                            '''*{
-                                                color: 'black';
-                                                font-family: 'Arial';
-                                                font-size: 22px;
-                                                border-radius: 12px;
-                                                font-weight: 200;
-                                                background: transparent;
-                                                background-color: rgba(100, 100, 100, 0.4);
+                                                }''')
+                    else:
+                        self.label_4.setText(error)
+                        self.label_4.setStyleSheet(
+                                                '''*{
+                                                    color: 'black';
+                                                    font-family: 'Arial';
+                                                    font-size: 22px;
+                                                    border-radius: 12px;
+                                                    font-weight: 200;
+                                                    padding-right:8px;
+                                                    background: transparent;
+                                                    background-color: rgba(250, 0, 0, 0.5);
 
                                             }''')
-                    self.label_4.setText('نام و نام خانوادگی :'
-                                    +str(name)+' '+str(family)+'\n'+'تلفن: '
-                                    +str(tell)+'\n کد ملی: '+str(code)+'\n کد عبور: '+str(password)+'\n'+'پایهی '+str(classs))
-                    self.label_4.setStyleSheet(
-                                            '''*{
-                                                color: 'black';
-                                                font-family: 'Arial';
-                                                font-size: 22px;
-                                                border-radius: 12px;
-                                                font-weight: 200;
-                                                padding-right:8px;
-                                                background: transparent;
-                                                background-color: rgba(0, 250, 0, 0.5);
-
-                                            }''')
+                    # Hide the pushbutton after inputs provided by the use.
+                    # self.pushButton.hide()  
                 else:
                     self.label_4.setText(error)
                     self.label_4.setStyleSheet(
-                                            '''*{
-                                                color: 'black';
-                                                font-family: 'Arial';
-                                                font-size: 22px;
-                                                border-radius: 12px;
-                                                font-weight: 200;
-                                                padding-right:8px;
-                                                background: transparent;
-                                                background-color: rgba(250, 0, 0, 0.5);
+                                                '''*{
+                                                    color: 'black';
+                                                    font-family: 'Arial';
+                                                    font-size: 22px;
+                                                    border-radius: 12px;
+                                                    font-weight: 200;
+                                                    padding-right:8px;
+                                                    background: transparent;
+                                                    background-color: rgba(250, 0, 0, 0.5);
 
-                                           }''')
-                # Hide the pushbutton after inputs provided by the use.
-                # self.pushButton.hide()  
+                                                }''')
             else:
-                self.label_4.setText(error)
-                self.label_4.setStyleSheet(
-                                            '''*{
-                                                color: 'black';
-                                                font-family: 'Arial';
-                                                font-size: 22px;
-                                                border-radius: 12px;
-                                                font-weight: 200;
-                                                padding-right:8px;
-                                                background: transparent;
-                                                background-color: rgba(250, 0, 0, 0.5);
-
-                                            }''')
-        else:
-            with open('data.json') as json_file:
-                data = json.load(json_file)
-        with open('data.json', 'w+') as outfile:
-            json.dump(data, outfile)
- 
+                with open('data.json') as json_file:
+                    data = json.load(json_file)
+            with open('data.json', 'w+') as outfile:
+                json.dump(data, outfile)
+        except:
+            pass
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)

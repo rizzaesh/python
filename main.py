@@ -9,9 +9,11 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QWidget, QFileDialog, QGridLayout, QMainWindow
 from PyQt5.QtWidgets import QMessageBox
-import datetime
+import jdatetime
 import os
+from PyQt5.QtCore import QTimer, QTime, Qt
 import subprocess
 # from untitledback import Ui_MainWindow
 class Ui_MainWindow(QtWidgets.QWidget):
@@ -23,8 +25,31 @@ class Ui_MainWindow(QtWidgets.QWidget):
                     '''*{
                 background-image: url(./qq.jpg);
                     }''')
+
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+
+        layout = QVBoxLayout()
+        self.label_9 = QtWidgets.QLabel(self.centralwidget)
+        self.label_9.setGeometry(QtCore.QRect(10, 10, 191, 61))
+        self.label_9.setObjectName("label_9")
+        self.label_9.setStyleSheet('''*{
+            color: 'black';
+            font-family: 'Arial';
+            font-weight: 900;
+            font-size: 22px;
+            border-radius: 12px;
+            background: transparent;
+            background-color: rgba(100, 100, 100, 0);
+
+
+        }''')
+        self.timer = QTimer(self)
+        layout.addWidget(self.label_9)
+
+        self.timer.timeout.connect(self.timerr)
+        self.timer.start(1000)
+        # self.add_on_5()
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(700, 300, 191, 41))
         self.pushButton.setObjectName("pushButton")
@@ -72,7 +97,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
             background-color: rgba(100, 100, 100, 0.9);
         }''')
         self.pushButton_5 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_5.setGeometry(QtCore.QRect(30,30,110,30))
+        self.pushButton_5.setGeometry(QtCore.QRect(10,70,110,30))
         self.pushButton_5.setObjectName("pushButton_5")
         self.pushButton_5.setStyleSheet(
         '''*{
@@ -224,11 +249,16 @@ class Ui_MainWindow(QtWidgets.QWidget):
         os.startfile("./search\\search.exe")
     def add_on_3(self):
         os.startfile("./upset\\upset.exe")
+    def timerr(self):
+        time = jdatetime.datetime.now()
+        self.label_9.setText(f'{time.hour} : {time.minute} : {time.second}')
+
     def add_on_4(self):
         # self.pushButton.hide()
         name, done1 = QtWidgets.QInputDialog.getText(
             self, 'Input Dialog', 'کد عبور خود را وارد کنید')
         if name == '9904':     
+            MainWindow.setWindowTitle("مدرسه دکتر علی شریعتی-خوش آمدید آقای باخدا")
             self.pushButton.setText("اضافه کردن ")
             self.pushButton.clicked.connect(self.add_on)
             self.pushButton_2.setText("جست و جو ")
@@ -241,22 +271,25 @@ class Ui_MainWindow(QtWidgets.QWidget):
     def onClicked(self, item):
 
         QMessageBox.information(self, "ارتباط", "برای اطلاعات بیشتر با 09036349122 تماس بگیرید.")
+    def add_on_inactive(self, item):
+  
+        QMessageBox.information(self," ", "متاسفانه اجازه‌ی ورود ندارید.")
 
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "مدرسه"))
-        self.pushButton.setText(_translate("MainWindow", "(غیر فعال)اضافه کردن"))
-        # self.pushButton.clicked.connect(self.add_on)
-        self.pushButton_2.setText(_translate("MainWindow", "جست و جو (غیرفعال)"))
-        # self.pushButton_2.clicked.connect(self.add_on_2)
+        MainWindow.setWindowTitle(_translate("MainWindow", "مدرسه دکتر علی شریعتی-ورود به عنوان میهمان"))
+        self.pushButton.setText(_translate("MainWindow", "اضافه کردن"))
+        self.pushButton.clicked.connect(self.add_on_inactive)
+        self.pushButton_2.setText(_translate("MainWindow", "جست و جو "))
+        self.pushButton_2.clicked.connect(self.add_on_inactive)
         self.pushButton_3.setText(_translate("MainWindow", "حضور و غیاب"))
         self.pushButton_3.clicked.connect(self.add_on_3)
         self.pushButton_5.setText(_translate("MainWindow","ورود به عنوان ادمین"))
         self.pushButton_5.clicked.connect(self.add_on_4)
         self.pushButton_hist.setText(_translate("MainWindow","تاریخچه"))
         self.pushButton_hist.clicked.connect(self.add_on_5)
-        self.label.setText(_translate("MainWindow", f'{nameofschool}'))
+        self.label.setText(_translate("MainWindow", 'شریعتی'))
         self.label_2.setText(_translate("MainWindow", "                 به نام خدا"))
         self.pushButton_4.setText(_translate("MainWindow","ارتباط با ما"))
         self.pushButton_4.clicked.connect(self.onClicked)
@@ -270,10 +303,10 @@ class Ui_MainWindow(QtWidgets.QWidget):
 if __name__ == "__main__":
     import sys
     import json
-    with open('name.json','r') as nameofschools:
-    	nameofschools = json.load(nameofschools)
+    # with open('name.json','r') as nameofschools:
+    # 	nameofschools = json.load(nameofschools)
 
-    nameofschool = nameofschools["name"]
+    # nameofschool = nameofschools["name"]
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()

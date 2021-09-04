@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QWidget, QFileDialog, QGridLayout, QMainWindow
+from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QWidget, QFileDialog, QGridLayout, QMainWindow ,QSizePolicy
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtGui import QCursor
 import sys
@@ -24,17 +24,44 @@ import os
 from zipfile import ZipFile
 from os.path import basename
 from PyQt5 import QtCore, QtGui, QtWidgets
-import datetime
+import jdatetime
 import json
 import sys
+
+
 class Ui_MainWindow(QtWidgets.QWidget):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1287, 693)
+        MainWindow.setFixedSize(1300,820)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+    # sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        # set clock
+        #        
+        layout = QVBoxLayout()
+        self.label_9 = QtWidgets.QLabel(self.centralwidget)
+        self.label_9.setGeometry(QtCore.QRect(10, 10, 191, 61))
+        self.label_9.setObjectName("label_9")
+        self.label_9.setStyleSheet('''*{
+            color: 'black';
+            font-family: 'Arial';
+            font-weight: 900;
+            font-size: 22px;
+            border-radius: 12px;
+            background: transparent;
+            background-color: rgba(100, 100, 100, 0);
+
+
+        }''')
+        self.timer = QTimer(self)
+        layout.addWidget(self.label_9)
+
+        self.timer.timeout.connect(self.timerr)
+        self.timer.start(1000)
+        # end set clock
+
         self.verticalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(30, 40, 511, 581))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(800, 40, 511, 581))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -117,6 +144,18 @@ class Ui_MainWindow(QtWidgets.QWidget):
                     background: transparent;
                     background-color: rgba(100, 100, 100, 0.9);
                         }''')
+        self.line = QLineEdit(self.centralwidget)
+        # pybutton = QPushButton('OK', self)
+        # pybutton.clicked.connect(self.clickMethod)
+        # pybutton.resize(200,32)
+        # pybutton.move(80, 60)  
+        self.line.move(80, 20)
+        self.line.resize(200, 32)
+        # self.nameLabel.move(20, 20)
+        self.line.hide()
+        self.line.returnPressed.connect(self.pushButton.click)
+        
+        
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1087, 21))
@@ -146,11 +185,15 @@ class Ui_MainWindow(QtWidgets.QWidget):
         # self.menumenu.setTitle(_translate("MainWindow", "تاریخچه"))
         # self.actionexit.setText(_translate("MainWindow", "تاریخچه"))
 
+    def timerr(self):
+        time = jdatetime.datetime.now()
+        self.label_9.setText(f'{time.hour} : {time.minute} : {time.second}')
 
     def upset(self):
+            self.line.show()
             self.pushButton.hide()
             self.verticalLayoutWidget_3.setGeometry(QtCore.QRect(750, 40, 481, 281))
-            time = datetime.datetime.now()
+            time = jdatetime.datetime.now()
             inday = time.day
             inmonth = time.month
             inyear = time.year
@@ -162,8 +205,12 @@ class Ui_MainWindow(QtWidgets.QWidget):
                 datadaily['0'] = [{"ID":data[index]['ID'],"time":0,"today":0,"repeat":0} for index in range(len(data))]
                 with open('datadaily.json', 'w+') as outfiledaily:
                     json.dump(datadaily, outfiledaily)
-
+                with open('daily.json') as dailys:
+                    daily = json.load(dailys)
             except:
+                daily={}
+                with open('daily.json','w+') as dailys:
+                    json.dump(daily,dailys)
                 with open('data.json') as outfile:
                     data = json.load(outfile)
                 datadaily = {}
@@ -181,70 +228,105 @@ class Ui_MainWindow(QtWidgets.QWidget):
             except:
                 datadaily[f'{inyear}-{inmonth}-{inday}'] = datadaily['0']
 
+
             with open('data.json') as outfile:
                 data = json.load(outfile)
-            number = 0
-            number1 = 0
-            number2 = 0
-            while true==1:
 
-                in_pass, done = QtWidgets.QInputDialog.getText(
-                    self, 'Input Dialog', 'لطفا کارت را در مقابل دستگاه قرار دهید \n سه مرتبه  Ok را فشار دهید برای خروج.')
-                if in_pass!="":
-                    for student in range(len(datadaily[f'{inyear}-{inmonth}-{inday}'])):
-                        if datadaily['0'][student]['ID']==in_pass:
-                            datadaily[f'{inyear}-{inmonth}-{inday}'][student]["today"]=1
-                            datadaily[f'{inyear}-{inmonth}-{inday}'][student]["time"]=f'{time.hour}.{time.minute}'
-                            datadaily[f'{inyear}-{inmonth}-{inday}'][student]["repeat"]+=1
-                            self.label.setPixmap(QPixmap(data[student]['filename']))
-                            self.label.setStyleSheet(
-                                    '''*{
-                            border: 2px solid '#BC006C';
-                            border-radius: 12px;
-                            margin: 2px 2px;
-                            padding: 6px;
-                                }''')
-                            self.label_2.setText('نام و نام خانوادگی :'
-                                    +str(data[student]['name'])+' '+str(data[student]['family'])+'\n ساعت ورود:  '+f'{time.hour}:{time.minute}'+'\n'+ 'پایه ی '+str(data[student]['class']))
-                            if int(data[student]['class']) == 1:
-                            	number+=1
-                            	self.label_3.setText(f'{number} student of class 1')
-                            if int(data[student]['class']) == 4:
-                            	number1+=1
-                            	self.label_3.setText(f'{number1} student of class 4')
-                            if int(data[student]['class']) == 9:
-                            	number2+=1
-                            	self.label_3.setText(f'{number2} student of class 9')
-                            
-
-
-
-
-                            self.label_3.setStyleSheet('''*{
-                                    color: 'black';
-                                    border: 2px solid '#BC006C';
-                                    font-family: 'Arial';
-                                    font-size: 32px;
-                                    border-radius: 12px;
-                                    margin: 2px 2px;
-                                    padding: 6px;
-                                    background-color:'green';
-                                }''')
-                            # self.label_3.setText(" ")
-                            self.label_2.setStyleSheet(
+            # while true==1:
+            # in_pass, done = QtWidgets.QInputDialog.getText(
+            #     self, ' ', 'لطفا کارت را در مقابل دستگاه قرار دهید.')
+            in_pass = self.line.text()
+            self.line.clear()
+            if True:
+                for student in range(len(datadaily[f'{inyear}-{inmonth}-{inday}'])):
+                    if datadaily['0'][student]['ID']==in_pass:
+                        datadaily[f'{inyear}-{inmonth}-{inday}'][student]["today"]=1
+                        datadaily[f'{inyear}-{inmonth}-{inday}'][student]["time"]=f'{time.hour}.{time.minute}'
+                        datadaily[f'{inyear}-{inmonth}-{inday}'][student]["repeat"]+=1
+                        self.label.setPixmap(QPixmap(data[student]['filename']))
+                        self.label.setStyleSheet(
                                 '''*{
-                            color: 'black';
-                            border: 2px solid '#BC006C';
-                            font-family: 'Arial';
-                            font-size: 32px;
-                            border-radius: 12px;
-                            margin: 2px 2px;
-                            padding: 6px; 
-                                }''')
-                else:
-                    o+=1
-                    if o == 3:
-                        true=0
+                        border: 2px solid '#BC006C';
+                        border-radius: 12px;
+                        margin: 2px 2px;
+                        padding: 6px;
+                            }''')
+                        self.label_2.setText('نام و نام خانوادگی :'
+                                +str(data[student]['name'])+' '+str(data[student]['family'])+'\n ساعت ورود:  '+f'{time.hour}:{time.minute}'+'\n'+ 'پایه ی '+str(data[student]['class']))
+                        # if int(data[student]['class']) == 1:
+                            # number=number+1
+                            # print(number)
+                        cl = data[student]['class']
+                        try:
+                            # for i in range(len(daily["er"])):
+                            if data[student]['ID'] not in daily["er"]:
+                                if daily[f'{cl}'] != []:
+                                    daily[f'{cl}']+=1
+                                    daily["er"].append(data[student]['ID'])
+                                else:
+                                    daily[f'{cl}']=1
+                                    daily['er'] = []
+                                    daily["er"].append(data[student]['ID'])
+                            else:
+                                pass
+                        except:
+                            daily[f'{cl}']=1
+                            daily['er'] = []
+                            daily["er"].append(data[student]['ID'])
+
+                        # try:
+                            # print(f'{cl}')
+                            # if daily[f'{cl}'] != []:
+                                # print("ddddd")
+                                # daily[f'{cl}']+=1
+                                # pass
+                            # else:print("OOOOOOOO")
+                        # except:
+                            # daily[f'{cl}'] = 1
+                            # pass
+                        # self.label_3.setText(daily[f'{cl}'])
+                        # print(daily[f'{cl}'])
+                        
+                        # if int(data[student]['class']) == 4:
+                        #     number1+=1
+                        #     self.label_3.setText(f'{number1} student of class 4')
+                        # if int(data[student]['class']) == 9:
+                        #     number2+=1
+                        #     self.label_3.setText(f'{number2} student of class 9')
+                        
+
+
+
+
+                        self.label_3.setStyleSheet('''*{
+                                color: 'black';
+                                border: 2px solid '#BC006C';
+                                font-family: 'Arial';
+                                font-size: 32px;
+                                border-radius: 12px;
+                                margin: 2px 2px;
+                                padding: 6px;
+                                background-color:'green';
+                            }''')
+                        # self.label_3.setText(" ")
+                        self.label_2.setStyleSheet(
+                            '''*{
+                        color: 'black';
+                        border: 2px solid '#BC006C';
+                        font-family: 'Arial';
+                        font-size: 32px;
+                        border-radius: 12px;
+                        margin: 2px 2px;
+                        padding: 6px; 
+                            }''')
+            else:
+                self.pushButton.show()
+                self.verticalLayoutWidget_3.setGeometry(QtCore.QRect(750, 40, 481, 111))
+                # o+=1
+                # if o == 3:
+                true=0
+            with open('daily.json', 'w+') as dailys:
+                json.dump(daily, dailys)
 
             with open('datadaily.json', 'w+') as outfile:
                 json.dump(datadaily, outfile)

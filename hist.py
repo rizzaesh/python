@@ -1,7 +1,7 @@
 
 import sys
 import json
-import datetime
+import jdatetime
 from PyQt5.QtWidgets import (QListWidget, QPushButton, QWidget, QHBoxLayout,
     QMessageBox, QApplication, QVBoxLayout)
 import PyQt5.QtWidgets
@@ -16,7 +16,7 @@ class Example(QtWidgets.QWidget):
         self.initUI()
 
     def initUI(self):
-        time = datetime.datetime.now()
+        time = jdatetime.datetime.now()
         inday = time.day
         inmonth = time.month
         inyear = time.year
@@ -24,13 +24,13 @@ class Example(QtWidgets.QWidget):
         hbox = QHBoxLayout()
         # listupset=[]
         def search(self,datee):
-            time = datetime.datetime.now()
+            time = jdatetime.datetime.now()
             inday = time.day
             inmonth = time.month
             inyear = time.year
             # vbox = QVBoxLayout(self)
             # hbox = QHBoxLayout()
-            # listupset=[]
+
             try:
                 with open('datafordaily.json') as json_sdaily:
                     # print("7")
@@ -57,7 +57,7 @@ class Example(QtWidgets.QWidget):
                 # print("8")
                 data = json.load(outfile)
             datee = f'{inyear}-{inmonth}-{inday}'
-
+            person_num = 0
             for i in range(len(datadaily['0'])):
                 # print("1")
                 if datadaily[datee][i]['today']==0:
@@ -72,10 +72,11 @@ class Example(QtWidgets.QWidget):
                                         })
                             # print("5")
                             # listWidget.addItem(f'{data[person]['name']} {data[person]['family']}, {data[person]['tell']}')
-                            spacee = " "
-                            ne =20-len(data[person]["name"])
+                            spacee = "  "
+                            ne =30-len(data[person]["name"])
                             # listupset.append(f'{data[person]["name"]}{spacee*ne}'+f'{data[person]["family"]}')
-                            self.listWidget.addItem(f'{person-1}  :  {data[person]["name"]}{spacee*ne}'+f'{data[person]["family"]}')
+                            self.listWidget.addItem(f'{person_num+1}  :  {data[person]["name"]}{spacee*ne}'+f'{data[person]["family"]}')
+                            person_num+=1
             with open('datafordaily.json','w+') as json_sdaily:
                 json.dump(datafordaily , json_sdaily)
         search(self,f'{inyear}-{inmonth}-{inday}')
@@ -104,7 +105,7 @@ class Example(QtWidgets.QWidget):
             background: transparent;
             background-color: rgba(100, 100, 100, 0.9);
         }''')
-        countrepeat_1 = QPushButton('کارتهای تکراری ',self)
+        countrepeat_1 = QPushButton('کارت های تکراری ',self)
         countrepeat_1.clicked.connect(self.count_repeat)
         countrepeat_1.setStyleSheet(
         '''*{
@@ -204,7 +205,8 @@ class Example(QtWidgets.QWidget):
             datadailys = json.load(json_filedailys)
         with open('data.json') as outfile:
             data = json.load(outfile)
-        spacee=" "
+        spacee="  "
+        person_num=0
         for person4 in range(len(data)):
         	ne =20-len(data[person4]["name"])
         	# print(data[person4]["name"])
@@ -212,15 +214,15 @@ class Example(QtWidgets.QWidget):
 
         		for person3 in range(len(data)):
         			if datadailys[person3]["ID"]==data[person4]["ID"]:
-        				self.listWidget.addItem(f'{person4-1}  :  {data[person4]["name"]}{spacee*ne}'+f'{data[person4]["family"]}'+'\n'+'روز های غیبت: '+f'{spacee*ne}'+f'{datadailys[person3]["today"]}')
-
+        				self.listWidget.addItem(f'{person_num+1}  :  {data[person4]["name"]}{spacee*(30-len(data[person4]["name"]))}'+f'{data[person4]["family"]}'+'\n'+'روز های غیبت: '+f'{(20-len(datadailys[person3]["today"]))*spacee}'+f'{datadailys[person3]["today"]}')
+        				person_num+=1
         	# else:
         	# 	QMessageBox.information(self, "اطلاعات",'نام و یا نام خانوادگی نامعتبر است')
 
         	# 	break
     def count_repeat(self):
         self.listWidget.clear()
-        time = datetime.datetime.now()
+        time = jdatetime.datetime.now()
         inday = time.day
         inmonth = time.month
         inyear = time.year
@@ -234,7 +236,7 @@ class Example(QtWidgets.QWidget):
             ffff=0
             if datadaily[f'{inyear}-{inmonth}-{inday}'][i]['repeat']>=2:
                 ffff=datadaily[f'{inyear}-{inmonth}-{inday}'][i]['repeat']
-                self.listWidget.addItem(f'{data[i]["name"]}'+'  '+f'{data[i]["family"]}'+'  '+f'{ffff}')
+                self.listWidget.addItem(f'{data[i]["name"]}'+'   '+f'{data[i]["family"]}'+'                  '+f'{ffff}')
         # except:
             # pass     
 
@@ -245,7 +247,7 @@ class Example(QtWidgets.QWidget):
         pass
 
     def onsearchbydateClicked(self):
-        time = datetime.datetime.now()
+        time = jdatetime.datetime.now()
         inday = time.day
         inmonth = time.month
         inyear = time.year
